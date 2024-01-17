@@ -34,10 +34,11 @@ class GamePrepare(val game: TextGame, val userCount: Int, val channel: MessageCh
         builder.appendLine("**${game.name}**")
         builder.appendLine(game.description)
         builder.appendLine("Number of players: $userCount\n")
-        builder.append("React with \"\uD83C\uDF89\" to enter!")
+        builder.append("React with \"${reactionEmoji.formatted}\" to enter!")
 
-        message = channel.sendMessage(builder.toString()).complete()
-        message?.addReaction(reactionEmoji)?.complete()
+        val message = channel.sendMessage(builder.toString()).complete()
+        this.message = message
+        message.addReaction(reactionEmoji).complete()
     }
 
     override fun onMessageReactionAdd(event: MessageReactionAddEvent) {
@@ -45,12 +46,11 @@ class GamePrepare(val game: TextGame, val userCount: Int, val channel: MessageCh
             return
 
         val message = event.retrieveMessage().complete()
-        if (event.retrieveMessage().complete() != message)
+        if (message != this.message)
             return
 
         val users = message.retrieveReactionUsers(reactionEmoji).complete()
         users.remove(DiscordBot.bot.user)
-        println(users.map { it.effectiveName })
         if (users.size >= userCount) {
             event.channel.sendMessage("May the game begin! Players: ${users.map { it.effectiveName }}").complete()
             DiscordBot.bot.jda.removeEventListener(this)
