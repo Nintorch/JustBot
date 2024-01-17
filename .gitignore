@@ -1,0 +1,7 @@
+.gradle
+build
+.idea
+app/token.txt
+gradle
+gradlew
+gradlew.bat
