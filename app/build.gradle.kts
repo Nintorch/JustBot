@@ -42,7 +42,7 @@ java {
 
 application {
     // Define the main class for the application.
-    mainClass.set("discordbot.AppKt")
+    mainClass.set("discordbot.DiscordBotKt")
 }
 
 tasks.named<Test>("test") {

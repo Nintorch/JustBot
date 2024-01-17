@@ -10,16 +10,7 @@ import java.io.File
 
 const val botPrefix = "$"
 
-class DiscordBot private constructor() : ListenerAdapter() {
-    companion object {
-        private var instance: DiscordBot? = null
-        val bot: DiscordBot get() = instance ?: throw Exception("Not initialized yet")
-
-        fun start() {
-            instance = DiscordBot()
-        }
-    }
-
+class DiscordBot : ListenerAdapter() {
     val jda = JDABuilder.createDefault(File("token.txt").readText())
             .enableIntents(GatewayIntent.MESSAGE_CONTENT) // enables explicit access to message.getContentDisplay()
             .addEventListeners(this)
@@ -42,4 +33,10 @@ class DiscordBot private constructor() : ListenerAdapter() {
         else
             CommandManager.tryNextMessageHandler(event)
     }
+}
+
+val discordBot by lazy { DiscordBot() }
+
+fun main() {
+    discordBot // lazily initialize the property
 }

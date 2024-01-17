@@ -2,7 +2,7 @@ package discordbot.games
 
 import discordbot.Command
 import discordbot.CommandManager
-import discordbot.DiscordBot
+import discordbot.discordBot
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
@@ -22,7 +22,7 @@ inline fun registerGameCommand(name: String, description: String, userCount: Int
 
 class GamePrepare(val game: TextGame, val userCount: Int, val channel: MessageChannel) : ListenerAdapter() {
     init {
-        DiscordBot.bot.jda.addEventListener(this)
+        discordBot.jda.addEventListener(this)
         sendMessage()
     }
 
@@ -42,7 +42,7 @@ class GamePrepare(val game: TextGame, val userCount: Int, val channel: MessageCh
     }
 
     override fun onMessageReactionAdd(event: MessageReactionAddEvent) {
-        if (event.user != null && event.user == DiscordBot.bot.user)
+        if (event.user != null && event.user == discordBot.user)
             return
 
         val message = event.retrieveMessage().complete()
@@ -50,10 +50,10 @@ class GamePrepare(val game: TextGame, val userCount: Int, val channel: MessageCh
             return
 
         val users = message.retrieveReactionUsers(reactionEmoji).complete()
-        users.remove(DiscordBot.bot.user)
+        users.remove(discordBot.user)
         if (users.size >= userCount) {
             event.channel.sendMessage("May the game begin! Players: ${users.map { it.effectiveName }}").complete()
-            DiscordBot.bot.jda.removeEventListener(this)
+            discordBot.jda.removeEventListener(this)
             game.start(users)
         }
     }
