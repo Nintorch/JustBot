@@ -1,6 +1,5 @@
 package discordbot
 
-import discordbot.commands.GreetCommand
 import discordbot.commands.HelpCommand
 import discordbot.commands.TestCommand
 import discordbot.games.RockPaperScissors
@@ -44,7 +43,6 @@ object CommandManager {
     fun registerCommands() {
         registerCategory(CommandCategory("main", "Main commands", "Main commands"))
         registerCommand(HelpCommand)
-        registerCommand(GreetCommand)
 
         registerCategory(CommandCategory("fun", "Fun commands", "Commands for fun"))
         registerCommand(TestCommand)

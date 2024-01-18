@@ -50,7 +50,7 @@ class GamePrepare(val game: TextGame, val userCount: Int, val channel: MessageCh
             return
 
         val users = message.retrieveReactionUsers(reactionEmoji).complete()
-        users.remove(discordBot.user)
+            .filter { it != discordBot.user && !it.isBot }
         if (users.size >= userCount) {
             event.channel.sendMessage("May the game begin! Players: ${users.map { it.effectiveName }}").complete()
             discordBot.jda.removeEventListener(this)

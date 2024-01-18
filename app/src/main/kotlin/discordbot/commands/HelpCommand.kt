@@ -6,8 +6,12 @@ import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 
 val HelpCommand = Command("help", "Show all commands", "main")
-{ _: User, channel: MessageChannel, _: String ->
+{ sender: User, channel: MessageChannel, _: String ->
     val builder = StringBuilder()
+    builder.append("Hi, ${sender.effectiveName}! I'm JustBot and ")
+    builder.appendLine("I was written in Kotlin using JDA.")
+    builder.appendLine("Here's something I can do:\n")
+
     val commandsByCategory = CommandManager.getCommands().values.groupBy { it.categoryId }
 
     for ((categoryId, commands) in commandsByCategory) {
