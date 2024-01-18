@@ -10,12 +10,19 @@ import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 
+abstract class TextGame : ListenerAdapter() {
+    abstract val name: String
+    abstract val description: String
+    abstract fun start(users: List<User>, channel: MessageChannel)
+}
+
 private val reactionEmoji = Emoji.fromUnicode("\uD83C\uDF89")
 
-inline fun registerGameCommand(name: String, description: String, userCount: Int, crossinline factory: () -> TextGame) {
+inline fun registerGameCommand(name: String, description: String, userCount: Int,
+                               crossinline factory: (sender: User, channel: MessageChannel, args: String) -> TextGame) {
     val command = Command(name, description, "fun")
-    { _: User, channel: MessageChannel, _: String ->
-        GamePrepare(factory(), userCount, channel)
+    { sender: User, channel: MessageChannel, args: String ->
+        GamePrepare(factory(sender, channel, args), userCount, channel)
     }
     CommandManager.registerCommand(command)
 }
@@ -54,7 +61,7 @@ class GamePrepare(val game: TextGame, val userCount: Int, val channel: MessageCh
         if (users.size >= userCount) {
             event.channel.sendMessage("May the game begin! Players: ${users.map { it.effectiveName }}").complete()
             discordBot.jda.removeEventListener(this)
-            game.start(users)
+            game.start(users, event.channel)
         }
     }
 }

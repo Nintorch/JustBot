@@ -21,7 +21,7 @@ class RockPaperScissors : TextGame() {
     val userChoices = arrayOf(0, 0)
     var users: List<User> = listOf()
 
-    override fun start(users: List<User>) {
+    override fun start(users: List<User>, channel: MessageChannel) {
         this.users = users
         prepareProcessUser(users[0])
         users[1].dms.sendMessage("Your opponent is making their choice").complete()

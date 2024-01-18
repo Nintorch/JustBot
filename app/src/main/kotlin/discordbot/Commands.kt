@@ -46,7 +46,10 @@ object CommandManager {
 
         registerCategory(CommandCategory("fun", "Fun commands", "Commands for fun"))
         registerCommand(TestCommand)
-        registerGameCommand("rps", "Rock-paper-scissors", 2) { RockPaperScissors() }
+        registerGameCommand("rps", "Rock-paper-scissors", 2)
+        { _: User, _: MessageChannel, _: String ->
+            RockPaperScissors()
+        }
     }
 
     fun executeCommand(event: MessageReceivedEvent) {
