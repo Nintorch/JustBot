@@ -1,10 +1,10 @@
 package discordbot.games
 
 import discordbot.CommandManager
+import discordbot.dms
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 
-private val User.dms: MessageChannel get() = this.openPrivateChannel().complete()
 private val itemNames = listOf("rock", "paper", "scissors")
 
 private enum class Result {
@@ -19,10 +19,8 @@ class RockPaperScissors : TextGame() {
 
     var currentUserID = 0
     val userChoices = arrayOf(0, 0)
-    var users: List<User> = listOf()
 
-    override fun start(users: List<User>, channel: MessageChannel) {
-        this.users = users
+    override fun start() {
         prepareProcessUser(users[0])
         users[1].dms.sendMessage("Your opponent is making their choice").complete()
     }
