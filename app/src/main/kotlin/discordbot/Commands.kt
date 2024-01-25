@@ -57,7 +57,7 @@ object CommandManager {
         val name = split[0].lowercase()
         val command = commands[name]
         if (command == null) {
-            event.channel.sendMessage("Command \"$name\" does not exist")
+            event.channel.sendMessage("Command \"$name\" does not exist").complete()
             return
         }
         val args = split.drop(1)
