@@ -1,7 +1,6 @@
 package discordbot
 
 import net.dv8tion.jda.api.JDABuilder
-import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
@@ -10,13 +9,17 @@ import java.io.File
 
 const val botPrefix = "$"
 
-class DiscordBot : ListenerAdapter() {
+class DiscordBot private constructor() : ListenerAdapter() {
+    companion object {
+        val instance = DiscordBot()
+    }
+
     val jda = JDABuilder.createDefault(File("token.txt").readText())
             .enableIntents(GatewayIntent.MESSAGE_CONTENT) // enables explicit access to message.getContentDisplay()
             .addEventListeners(this)
-            .setActivity(Activity.playing("some game"))
             .build()
-    inline val user: User get() = jda.selfUser
+
+    val user: User get() = jda.selfUser
 
     init {
         CommandManager.registerCommands()
@@ -35,8 +38,6 @@ class DiscordBot : ListenerAdapter() {
     }
 }
 
-val discordBot by lazy { DiscordBot() }
-
 fun main() {
-    discordBot // lazily initialize the property
+    DiscordBot.instance // lazily initialize the bot
 }

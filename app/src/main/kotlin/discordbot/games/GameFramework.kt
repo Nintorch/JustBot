@@ -1,8 +1,7 @@
 package discordbot.games
 
 import discordbot.Command
-import discordbot.CommandManager
-import discordbot.discordBot
+import discordbot.DiscordBot
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
@@ -27,22 +26,21 @@ abstract class TextGame : ListenerAdapter() {
 private val joinEmoji = Emoji.fromUnicode("\uD83C\uDF89")
 private val finishEmoji = Emoji.fromUnicode("\uD83D\uDC4D")
 
-inline fun registerGameCommand(name: String, description: String, minUserCount: Int, maxUserCount: Int,
-                               crossinline factory: (sender: User, channel: MessageChannel, args: String) -> TextGame?) {
-    val command = Command(name, description, "fun")
-    { sender: User, channel: MessageChannel, args: String ->
-        val game = factory(sender, channel, args) ?: return@Command
-        GamePrepare(game, minUserCount, maxUserCount, channel)
-    }
-    CommandManager.registerCommand(command)
-}
+inline fun wrapGameCommand(name: String, description: String, minUserCount: Int, maxUserCount: Int,
+                           crossinline factory: (sender: User, channel: MessageChannel, args: String) -> TextGame?): Command
+    =   Command(name, description, "fun")
+        { sender: User, channel: MessageChannel, args: String ->
+            val game = factory(sender, channel, args) ?: return@Command
+            GamePrepare(game, minUserCount, maxUserCount, channel)
+        }
+
 
 class GamePrepare(val game: TextGame,
                   val minUserCount: Int,
                   val maxUserCount: Int,
                   val channel: MessageChannel) : ListenerAdapter() {
     init {
-        discordBot.jda.addEventListener(this)
+        DiscordBot.instance.jda.addEventListener(this)
         sendMessage()
     }
 
@@ -65,17 +63,19 @@ class GamePrepare(val game: TextGame,
 
         message = channel.sendMessage(builder.toString()).complete()
         message.addReaction(joinEmoji).complete()
+        if (minUserCount != maxUserCount)
+            message.addReaction(finishEmoji).complete()
     }
 
     override fun onMessageReactionAdd(event: MessageReactionAddEvent) {
-        if (event.user != null && event.user == discordBot.user)
+        if (event.user != null && event.user == DiscordBot.instance.user)
             return
 
         if (event.retrieveMessage().complete() != message)
             return
 
         val users = message.retrieveReactionUsers(joinEmoji).complete()
-            .filter { it != discordBot.user && !it.isBot }.take(maxUserCount)
+            .filter { it != DiscordBot.instance.user && !it.isBot }.take(maxUserCount)
 
         when (event.reaction.emoji.asUnicode()) {
             joinEmoji -> {
@@ -92,7 +92,7 @@ class GamePrepare(val game: TextGame,
     private fun startGame(users: List<User>, early: Boolean) {
         channel.sendMessage((if (early) "The game was requested to start earlier. " else "") +
             "May the game begin! Players: ${users.joinToString(", ") { it.effectiveName }}").complete()
-        discordBot.jda.removeEventListener(this)
+        DiscordBot.instance.jda.removeEventListener(this)
         game.prepare(users, channel)
         game.start()
     }

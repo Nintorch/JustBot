@@ -5,4 +5,5 @@ app/token.txt
 gradle
 gradlew
 gradlew.bat
-token.txt
+app/token.txt
+app.jar

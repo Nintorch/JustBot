@@ -7,8 +7,22 @@ import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 import java.net.URL
 import kotlin.random.Random
 
+// TODO: a mode where the explainer can decide if the guesser has guessed the word correctly
 class Crocodile(private val difficulty: Difficulty) : TextGame() {
     companion object {
+        val command = wrapGameCommand("crocodile", "Игра в крокодила", 2, 2)
+        { _: User, channel: MessageChannel, args: String ->
+            val difficulty = when (args.lowercase()) {
+                "easy" -> Crocodile.Companion.Difficulty.EASY
+                "medium" -> Crocodile.Companion.Difficulty.MEDIUM
+                else -> {
+                    channel.sendMessage("В качестве сложности введите easy или medium.").complete()
+                    return@wrapGameCommand null
+                }
+            }
+            Crocodile(difficulty)
+        }
+
         enum class Difficulty {
             EASY,
             MEDIUM,

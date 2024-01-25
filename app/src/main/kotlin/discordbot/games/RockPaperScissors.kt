@@ -14,6 +14,13 @@ private enum class Result {
 }
 
 class RockPaperScissors : TextGame() {
+    companion object {
+        val command = wrapGameCommand("rps", "Rock-paper-scissors", 2, 2)
+        { _: User, _: MessageChannel, _: String ->
+            RockPaperScissors()
+        }
+    }
+
     override val name get() = "Rock-Paper-Scissors"
     override val description get() = "Play rock-paper-scissors in Discord with your friend!"
 

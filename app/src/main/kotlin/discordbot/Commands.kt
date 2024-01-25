@@ -4,7 +4,7 @@ import discordbot.commands.HelpCommand
 import discordbot.commands.TestCommand
 import discordbot.games.Crocodile
 import discordbot.games.RockPaperScissors
-import discordbot.games.registerGameCommand
+import discordbot.games.wrapGameCommand
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
@@ -47,22 +47,8 @@ object CommandManager {
 
         registerCategory(CommandCategory("fun", "Fun commands", "Commands for fun"))
         registerCommand(TestCommand)
-        registerGameCommand("rps", "Rock-paper-scissors", 2, 2)
-        { _: User, _: MessageChannel, _: String ->
-            RockPaperScissors()
-        }
-        registerGameCommand("crocodile", "Игра в крокодила", 2, 2)
-        { _: User, channel: MessageChannel, args: String ->
-            val difficulty = when (args.lowercase()) {
-                "easy" -> Crocodile.Companion.Difficulty.EASY
-                "medium" -> Crocodile.Companion.Difficulty.MEDIUM
-                else -> {
-                    channel.sendMessage("В качестве сложности введите easy или medium.").complete()
-                    return@registerGameCommand null
-                }
-            }
-            Crocodile(difficulty)
-        }
+        registerCommand(RockPaperScissors.command)
+        registerCommand(Crocodile.command)
     }
 
     fun executeCommand(event: MessageReceivedEvent) {
