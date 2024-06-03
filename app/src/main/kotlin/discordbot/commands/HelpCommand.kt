@@ -4,6 +4,7 @@ import discordbot.Command
 import discordbot.CommandManager
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
+import javax.sound.sampled.Clip
 
 val HelpCommand = Command("help", "Show all commands", "main")
 { sender: User, channel: MessageChannel, _: String ->

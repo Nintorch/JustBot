@@ -9,17 +9,13 @@ import java.io.File
 
 const val botPrefix = "$"
 
-class DiscordBot private constructor() : ListenerAdapter() {
-    companion object {
-        val instance = DiscordBot()
-    }
-
+object DiscordBot : ListenerAdapter() {
     val jda = JDABuilder.createDefault(File("token.txt").readText())
-            .enableIntents(GatewayIntent.MESSAGE_CONTENT) // enables explicit access to message.getContentDisplay()
+            .enableIntents(GatewayIntent.MESSAGE_CONTENT)
             .addEventListeners(this)
             .build()
 
-    val user: User get() = jda.selfUser
+    val user get() = jda.selfUser as User
 
     init {
         CommandManager.registerCommands()
@@ -39,5 +35,5 @@ class DiscordBot private constructor() : ListenerAdapter() {
 }
 
 fun main() {
-    DiscordBot.instance // lazily initialize the bot
+    DiscordBot // lazily initialize the bot
 }

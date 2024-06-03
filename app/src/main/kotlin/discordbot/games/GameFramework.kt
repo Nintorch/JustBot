@@ -40,7 +40,7 @@ class GamePrepare(val game: TextGame,
                   val maxUserCount: Int,
                   val channel: MessageChannel) : ListenerAdapter() {
     init {
-        DiscordBot.instance.jda.addEventListener(this)
+        DiscordBot.jda.addEventListener(this)
         sendMessage()
     }
 
@@ -68,31 +68,31 @@ class GamePrepare(val game: TextGame,
     }
 
     override fun onMessageReactionAdd(event: MessageReactionAddEvent) {
-        if (event.user != null && event.user == DiscordBot.instance.user)
+        if (event.user != null && event.user == DiscordBot.user)
             return
 
         if (event.retrieveMessage().complete() != message)
             return
 
         val users = message.retrieveReactionUsers(joinEmoji).complete()
-            .filter { it != DiscordBot.instance.user && !it.isBot }.take(maxUserCount)
+            .filter { it != DiscordBot.user && !it.isBot }.filterNotNull().take(maxUserCount)
 
         when (event.reaction.emoji.asUnicode()) {
             joinEmoji -> {
                 if (users.size == maxUserCount)
-                    startGame(users, false)
+                    startGame(users)
             }
             finishEmoji -> {
                 if (users.size >= minUserCount)
-                    startGame(users, true)
+                    startGame(users, early = true)
             }
         }
     }
 
-    private fun startGame(users: List<User>, early: Boolean) {
+    private fun startGame(users: List<User>, early: Boolean = false) {
         channel.sendMessage((if (early) "The game was requested to start earlier. " else "") +
             "May the game begin! Players: ${users.joinToString(", ") { it.effectiveName }}").complete()
-        DiscordBot.instance.jda.removeEventListener(this)
+        DiscordBot.jda.removeEventListener(this)
         game.prepare(users, channel)
         game.start()
     }

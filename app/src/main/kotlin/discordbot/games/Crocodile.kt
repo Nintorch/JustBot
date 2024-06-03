@@ -56,7 +56,6 @@ class Crocodile(private val difficulty: Difficulty) : TextGame() {
     private var currentWord = ""
 
     override fun start() {
-
         val value = Random.nextInt(2)
         explainer = users[value]
         secondUser = users[1-value]
